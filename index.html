@@ -1,61 +1,433 @@
-<html><head>
-<title>d3velop</title>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<style type="text/css">
-body, pre, a		{background-color:white; color:black; font-size: 12px;
-			font-family:Verdana, Arial, Helvetica, SunSans-Regular, 
-			Sans-Serif;margin:4px;margin-top:0px;line-height:13px;}
-pre			{font-family:monospace;}
-div			{float:left;width:255px;margin:0;padding:0;}
-#box			{float:none;margin:0 auto;}
-ul			{font-size:12px;margin-top:20px;margin:0;}
-ul > li			{list-style-type:square;margin-top:12px;}
-hr			{border:0;border-top:1px black solid;margin:15px 0;}
-.red			{color:red;}
-a			{font-weight:bold;text-decoration:none;margin:0;}
-a:hover			{color:red;}
-#foot			{font-size:9px;text-align:center;margin-top:-5px;}
-#impressum		{position:fixed;bottom:2px;left:2px;}
-#impressum > a		{font-size:9px;font-weight:normal;}
-</style>
-<link rel="shortcut icon" href="favicon.ico" />
-</head><body>
+<!DOCTYPE html>
+<html lang="en-SC">
+<head>
+    <title>D3v Ltd</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- Add prefetch hints -->
+    <link rel="prefetch" href="/">
+    <link rel="dns-prefetch" href="/">
+    
+    <!-- Inline SVG favicons -->
+    <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="black"/><circle cx="50" cy="50" r="40" fill="none" stroke="%23333" stroke-width="8"/></svg>' id="favicon-normal">
+    <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="black"/><circle cx="50" cy="50" r="40" fill="none" stroke="%2333ff33" stroke-width="8"/></svg>' id="favicon-active">
+    
+    <script>
+        // Parse reload interval from query string, default to 5000ms
+        const urlParams = new URLSearchParams(window.location.search);
+        const reloadInterval = parseInt(urlParams.get('reload')) || 5000;
+        
+        // Favicon switching function
+        function startNetworkBlink() {
+            const normalFavicon = document.getElementById('favicon-normal').href;
+            const activeFavicon = document.getElementById('favicon-active').href;
+            const iconLink = document.querySelector("link[rel='icon']");
+            
+            // Start blinking 1 second before reload
+            setTimeout(() => {
+                const blinkInterval = setInterval(() => {
+                    iconLink.href = iconLink.href === normalFavicon ? activeFavicon : normalFavicon;
+                }, 100); // Blink every 100ms
+                
+                // Stop blinking after 800ms
+                setTimeout(() => {
+                    clearInterval(blinkInterval);
+                    iconLink.href = normalFavicon;
+                }, 800);
+            }, reloadInterval - 1000);
+        }
+        
+        // Prefetch function
+        function prefetchPage() {
+            return fetch(window.location.href)
+                .then(response => response.text())
+                .catch(error => console.error('Prefetch failed:', error));
+        }
 
+        // Initialize prefetch on page load
+        let prefetchPromise = null;
+        
+        // Reload function with prefetch and network activity simulation
+        function reloadWithPrefetch() {
+            // Start prefetch 2 seconds before reload
+            if (!prefetchPromise && reloadInterval > 2000) {
+                setTimeout(() => {
+                    prefetchPromise = prefetchPage();
+                }, reloadInterval - 2000);
+            }
+            
+            // Start network activity simulation
+            startNetworkBlink();
+            
+            // Schedule the reload
+            setTimeout(() => {
+                window.location.reload();
+            }, reloadInterval);
+        }
+
+        // Start the reload cycle when page loads
+        window.addEventListener('load', reloadWithPrefetch);
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        body, pre, a {
+            background-color: white;
+            color: black;
+            font-size: 12px;
+            font-family: Verdana, Arial, Helvetica, SunSans-Regular, Sans-Serif;
+            line-height: 13px;
+        }
+        body {
+            margin-top: -140px;
+        }
+        
+        pre {
+            font-family: monospace;
+            margin: 0;
+        }
+        
+        div {
+            float: left;
+            width: 255px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #box {
+            float: none;
+            margin: 0 auto;
+        }
+        
+        ul {
+            font-size: 12px;
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        ul > li {
+            list-style-type: square;
+            margin-top: 12px;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px black solid;
+            margin: 15px 0;
+        }
+        
+        .red {
+            color: red;
+        }
+        
+        a {
+            font-weight: bold;
+            text-decoration: none;
+            margin: 0;
+        }
+        
+        a:hover {
+            color: red;
+        }
+
+        /* Rules for showcase links */
+        .showcase a:hover {
+            color: #0066ff !important;
+        }
+        
+        /* Specific rules for dev and staging links that override showcase hover */
+        .showcase a[href*="dev.sternvoll.com"]:hover {
+            color: #2ecc71 !important;
+        }
+        
+        .showcase a[href*="staging.sternvoll.com"]:hover {
+            color: #ff6600 !important;
+        }
+        
+        #foot {
+            font-size: 9px;
+            text-align: center;
+            margin-top: -5px;
+        }
+
+        #foot a {
+            color: #ccc;
+        }
+        
+        #impressum {
+            position: fixed;
+            bottom: 2px;
+            right: 4px;
+        }
+        
+        #impressum > a {
+            font-size: 9px;
+            font-weight: normal;
+        }
+
+        /* Modal styles preserved from previous version */
+        .modal {
+            visibility: hidden;
+            opacity: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: visibility 0s linear 0.2s, opacity 0.2s;
+        }
+
+        .modal.visible {
+            visibility: visible;
+            opacity: 1;
+            transition-delay: 0s;
+        }
+
+        .modal-content {
+            background-color: white;
+            border: 1px solid black;
+            padding: 15px;
+            width: 255px;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.2s;
+        }
+
+        .modal.visible .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid black;
+        }
+
+        .warning-icon {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .close:hover {
+            color: red;
+        }
+
+        .modal-body {
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .showcase {
+            border: 2px dashed #2ecc71;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            width: 225px; /* Adjusted to fit within the 255px container while accounting for padding */
+        }
+
+        .showcase h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .brand {
+            margin-bottom: 12px;
+        }
+
+        .brand:last-child {
+            margin-bottom: 0;
+        }
+
+        .brand-name {
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 3px;
+            color: inherit;
+        }
+        
+        .brand-name-link {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .brand-name-link:hover .brand-name {
+            color: red;
+        }
+
+        .brand-description {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            font-weight: normal;
+            margin-right: -15px;
+            padding: 8px 13px 8px 8px;
+            transition: border-color 0.2s ease;
+            background-color: #E6F3FF;
+            border: 2px solid #2B5F8F;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .brand-description:hover {
+            color: black !important;
+            border-right: 2px dashed #2B5F8F;
+        }
+        
+        .env-link {
+            margin-left: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid black;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .btn.danger:hover {
+            color: red;
+            border-color: red;
+        }
+    </style>
+</head>
+<body>
 <div id="box">
-<pre>                ___
-               / <span class="red">__</span>\<span class="red">___</span>
-              / <span class="red">/      \</span>
-          ___/ <span class="red">/____   /</span> ____
-         /    <span class="red">__</span>/<span class="red">_</span>\<span class="red">/  /</span> /   /
-        /  __<span class="red">/       /</span>\/   /
-       /  /_<span class="red">/____   /</span>     /
-http://\___<span class="red">___</span>/<span class="red">_/  /</span>\____/elop.net/
-          <span class="red">/       /
-          \______/</span></pre>
-	<hr />
-	<ul>
-		<li><a href="https://github.com/pguth/jedi_commons">jedi commons</a><br />
-Die Lizenz f&uuml;r Jedi-Ritter!
-		</li>
-		<li><a href="https://github.com/pguth/mmryXtndr">mmryxtndr</a><br />
-Ein Denkspiel à la "ich packe meinen koffer...".
-		</li>
-		<li><a href="https://github.com/pguth/simple_php_counter">simple php counter</a><br />
-Ein einfacher Textdatei basierter PHP Besucherzähler.
-		</li>
-		<li><a href="http://perguth.de">kontakt</a>
-		</li>
-	</ul>
-	<hr style="margin-bottom:5px;" />
-	<div id="foot">
-		Man muß noch Chaos in sich tragen, um einen tanzenden Stern gebären zu können.<br />
-		<br />
-		<a href=https://github.com/pguth/d3v.at/blob/gh-pages/index.html style=color:#ccc>(Github)</a><br />
-	</div>
+    <pre>                  ___
+                 / <span class="red">__</span>\<span class="red">___</span>
+                / <span class="red">/      \</span>
+            ___/ <span class="red">/____   /</span> ____
+           /    <span class="red">__</span>/<span class="red">_</span>\<span class="red">/  /</span> /   /
+          /  __<span class="red">/       /</span>\/   /
+         /  /_<span class="red">/____   /</span>     /
+  http://\___<span class="red">___</span>/<span class="red">_/  /</span>\____/.ltd
+            <span class="red">/       /
+            \______/</span></pre>
+    <hr>
+    <ul>
+        <li><a href="https://d3v.ltd/xrpc/_health">D3v Ltd (in formation) Bluesky</a><br>
+            Our Bluesky instance. It might not be connectable with Yggdrasil yet.
+        </li>
+        <li><a href="#" onclick="showModal(); return false;">Thingylabs Yggdrasil Public Node</a><br>
+            A German Yggdrasil Network node run by our friends at Thingylabs.
+        </li>
+    </ul>
+    <hr>
+    <div class="showcase">
+        <h3>Managed Brands</h3>
+        <div class="brand">
+            <a href="https://www.sternvoll.com/" class="brand-name-link">
+                <span class="brand-name">Sternvoll Jewelry</span>
+            </a>
+            <a href=https://dev.sternvoll.com/ class="env-link">--dev</a>
+            <a href=https://staging.sternvoll.com/ class="env-link">--staging</a>
+            <a href="https://www.sternvoll.com/" class="brand-description">
+                Premium lifestyle brand focusing on sustainable luxury goods and experiences.
+            </a>
+        </div>
+        <div class="brand">
+            <a href="https://www.pixelpilot.com/" class="brand-name-link">
+                <span class="brand-name">PiXELPiLOT</span>
+            </a>
+            <a href="https://www.pixelpilot.com/" class="brand-description">
+                Digital innovation studio specializing in creative technology solutions.
+            </a>
+        </div>
+    </div>
+    <hr style="margin-bottom:5px;">
+    <div id="foot">
+        <span style="color:#ccc!important">
+            <a href="https://seychellesoffshore.com/"><img alt="Flag_of_Seychelles" src="assets/flag-of-seychelles.png" height="9"></a> /
+            <a href="https://github.com/thingylabs/d3v.ltd/blob/gh-pages/index.html"><img alt="Github" src="assets/github-mark.png" height="9"></a><br>
+        </span>
+    </div>
 </div>
+
 <div id="impressum">
-	<a href="http://perguth.de">impressum</a> /
-	<a href="http://validator.w3.org/check?uri=https%3A%2F%2Fd3v.at%2F">valid html</a>
+    <a href="http://validator.w3.org/check?uri=https%3A%2F%2Fwww.d3v.ltd%2F">valid html</a>
 </div>
-<script type="text/javascript" src="/slimstat/?js"></script>
-</body></html>
+
+<!-- Warning Modal -->
+<div id="warningModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="warning-icon">!</span>
+            <strong>Warning</strong>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            You are about to leave the free internet and enter a network operating under EU jurisdiction.
+            <br><br>
+            For your security, it is recommended to use the Yggdrasil Network to establish a secure connection.
+        </div>
+        <div class="modal-buttons">
+            <button class="btn" onclick="connectViaYgg()">Connect Securely via Ygg</button>
+            <button class="btn danger" onclick="proceedToSite()">Continue to EU Network</button>
+            <button class="btn" onclick="closeModal()">Stay Here</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showModal() {
+        const modal = document.getElementById('warningModal');
+        modal.classList.add('visible');
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('warningModal');
+        modal.classList.remove('visible');
+    }
+
+    function proceedToSite() {
+        window.location.href = 'https://ygg.thingylabs.io/';
+    }
+
+    function connectViaYgg() {
+        window.location.href = 'https://ygg-only.thingylabs.io/';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('warningModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+</script>
+
+</body>
+</html>
